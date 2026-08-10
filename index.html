@@ -154,6 +154,15 @@
   .popover-clear:hover{ text-decoration:underline; }
   .empty-note{ font-size:12.5px; color:var(--muted); padding:4px 6px; }
 
+  .menu-item{
+    display:block; width:100%; text-align:left; background:none; border:none;
+    font-size:13.5px; color:var(--ink); padding:9px 10px; border-radius:7px;
+    cursor:pointer; font-family:inherit;
+  }
+  .menu-item:hover{ background:#f4f7f8; }
+  .menu-item .menu-sub{ display:block; font-size:11.5px; color:var(--muted); margin-top:2px; font-weight:400; }
+  .menu-item .menu-title{ font-weight:600; }
+
   .content{ padding:26px 32px 40px; max-width:900px; width:100%; margin:0 auto; }
   .content-header{
     display:flex; align-items:baseline; justify-content:space-between;
@@ -320,8 +329,27 @@
             </div>
           </div>
 
+          <div class="popover-wrap">
+            <button class="icon-btn" id="exportBtn">Export ⌄</button>
+            <div class="popover" id="exportPopover" style="width:250px;">
+              <div class="popover-header">
+                <span>Export</span>
+                <button class="popover-close" data-close>&times;</button>
+              </div>
+              <div class="popover-body">
+                <button class="menu-item" id="exportCurrentBtn">
+                  <span class="menu-title">Export Current Profile</span>
+                  <span class="menu-sub">Opens a print-ready PDF layout</span>
+                </button>
+                <button class="menu-item" id="exportAllBtn">
+                  <span class="menu-title">Export All Profiles</span>
+                  <span class="menu-sub" id="exportAllSub">Opens a print-ready PDF layout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <span class="icon-btn" id="searchIconBtn" title="Search">🔍</span>
-          <span class="icon-btn" style="cursor:default;">⋯</span>
         </div>
       </div>
 
@@ -481,6 +509,8 @@
       current = 0;
       buildFilterOptions();
       applyFiltersSort();
+      document.getElementById('exportAllSub').textContent =
+        'All ' + participants.length + ' profiles — opens a print-ready PDF layout';
 
       document.getElementById('searchInput').addEventListener('input', onSearch);
       document.getElementById('prevBtn').addEventListener('click', () => go(current - 1));
@@ -558,10 +588,13 @@
     const filterPop = document.getElementById('filterPopover');
     const sortBtn = document.getElementById('sortBtn');
     const sortPop = document.getElementById('sortPopover');
+    const exportBtn = document.getElementById('exportBtn');
+    const exportPop = document.getElementById('exportPopover');
 
     function closeAll(){
       filterPop.classList.remove('open');
       sortPop.classList.remove('open');
+      exportPop.classList.remove('open');
     }
     function toggle(pop){
       const willOpen = !pop.classList.contains('open');
@@ -571,6 +604,16 @@
 
     filterBtn.addEventListener('click', e => { e.stopPropagation(); toggle(filterPop); });
     sortBtn.addEventListener('click', e => { e.stopPropagation(); toggle(sortPop); });
+    exportBtn.addEventListener('click', e => { e.stopPropagation(); toggle(exportPop); });
+
+    document.getElementById('exportCurrentBtn').addEventListener('click', () => {
+      exportCurrentProfile();
+      closeAll();
+    });
+    document.getElementById('exportAllBtn').addEventListener('click', () => {
+      exportAllProfiles();
+      closeAll();
+    });
 
     document.querySelectorAll('.popover-close').forEach(btn => {
       btn.addEventListener('click', closeAll);
@@ -601,6 +644,124 @@
 
   function isPopoverOpen(){
     return !!document.querySelector('.popover.open');
+  }
+
+  /* ---------------- Export (Current Profile / All Profiles) ---------------- */
+  /* Both exports open a new tab with a clean, print-formatted layout and
+     trigger the browser's print dialog. Choosing "Save as PDF" as the
+     destination there produces a nicely laid-out PDF — this avoids needing
+     any external PDF-generation library. */
+
+  const PRINT_CSS = `
+    @page { size: letter; margin: 0.7in; }
+    *{ box-sizing:border-box; }
+    body{ font-family:'Inter',system-ui,-apple-system,sans-serif; color:#1d2b32; margin:0; }
+
+    .toolbar{
+      position:sticky; top:0; background:#fff; border-bottom:1px solid #e3e9ec;
+      padding:14px 22px; display:flex; align-items:center; gap:12px; z-index:10;
+    }
+    .toolbar button{
+      padding:9px 18px; border-radius:8px; border:1px solid #d7e0e3; background:#166f84;
+      color:#fff; font-weight:600; font-size:13.5px; cursor:pointer; font-family:inherit;
+    }
+    .toolbar button.secondary{ background:#fff; color:#1d2b32; }
+    .toolbar .hint{ font-size:12px; color:#6b7c84; }
+    @media print { .no-print{ display:none !important; } }
+
+    .profile-block{ padding:30px 6px; page-break-after: always; }
+    .profile-block:last-child{ page-break-after: auto; }
+    .profile-head{
+      display:flex; gap:22px; border-bottom:2px solid #166f84;
+      padding-bottom:18px; margin-bottom:18px;
+    }
+    .pdf-photo-wrap{
+      width:130px; height:130px; flex:0 0 130px; border-radius:10px; overflow:hidden;
+      background:#125c6d; display:flex; align-items:center; justify-content:center;
+    }
+    .pdf-photo{ width:100%; height:100%; object-fit:cover; display:block; }
+    .pdf-photo-fallback{ color:#fff; font-family:'Rubik',sans-serif; font-size:34px; font-weight:700; }
+    .profile-headinfo{ flex:1; min-width:0; padding-top:2px; }
+    .profile-toprow{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .profile-toprow h1{ font-family:'Rubik',sans-serif; font-size:22px; margin:0; color:#0f4a58; }
+    .pdf-tag{
+      background:#eef1f2; color:#4c5c63; font-size:11.5px; font-weight:700;
+      padding:4px 11px; border-radius:20px; white-space:nowrap;
+    }
+    .pdf-field{ font-size:13px; margin-bottom:6px; color:#33454c; }
+    .pdf-bio-label{
+      font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+      color:#6b7c84; margin-bottom:8px; margin-top:4px;
+    }
+    .pdf-bio-text{ font-size:12.8px; line-height:1.65; color:#25333a; white-space:pre-line; }
+  `;
+
+  function buildProfileBlockHTML(p){
+    const photoSrc = p.photoFile ? (PHOTO_DIR + p.photoFile) : '';
+    const photoHtml = photoSrc
+      ? `<img class="pdf-photo" src="${escapeHtml(photoSrc)}" alt="${escapeHtml(p.name)}"
+           onerror="this.outerHTML='<div class=&quot;pdf-photo-fallback&quot;>${initials(p.name)}</div>'">`
+      : `<div class="pdf-photo-fallback">${initials(p.name)}</div>`;
+
+    return `
+      <section class="profile-block">
+        <div class="profile-head">
+          <div class="pdf-photo-wrap">${photoHtml}</div>
+          <div class="profile-headinfo">
+            <div class="profile-toprow">
+              <h1>${escapeHtml(p.name)}</h1>
+              ${p.role ? `<span class="pdf-tag">${escapeHtml(p.role)}</span>` : ''}
+            </div>
+            ${(p.title || p.org) ? `<div class="pdf-field">🏢&nbsp; ${escapeHtml(p.title)}${p.title && p.org ? ' — ' : ''}${escapeHtml(p.org)}</div>` : ''}
+            ${p.group ? `<div class="pdf-field">👥&nbsp; ${escapeHtml(p.group)}</div>` : ''}
+            ${p.email ? `<div class="pdf-field">✉️&nbsp; ${escapeHtml(p.email)}</div>` : ''}
+          </div>
+        </div>
+        <div class="profile-bio">
+          <div class="pdf-bio-label">Biography</div>
+          <div class="pdf-bio-text">${escapeHtml(p.bio || '(No biography provided.)')}</div>
+        </div>
+      </section>
+    `;
+  }
+
+  function openPrintWindow(title, bodyHtml){
+    const w = window.open('', '_blank');
+    if(!w){
+      alert('Your browser blocked the export pop-up. Please allow pop-ups for this page and try again.');
+      return;
+    }
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <base href="${document.baseURI}">
+      <title>${escapeHtml(title)}</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik:wght@600;700&display=swap" rel="stylesheet">
+      <style>${PRINT_CSS}</style>
+      </head><body>
+      <div class="no-print toolbar">
+        <button onclick="window.print()">🖨 Print / Save as PDF</button>
+        <button class="secondary" onclick="window.close()">Close</button>
+        <span class="hint">In the print dialog, choose "Save as PDF" as the destination.</span>
+      </div>
+      ${bodyHtml}
+      </body></html>`);
+    w.document.close();
+    w.focus();
+    // Give web fonts and photos a moment to load before the print dialog opens
+    setTimeout(() => { try{ w.print(); } catch(e){} }, 700);
+  }
+
+  function exportCurrentProfile(){
+    if(!filtered.length) return;
+    const p = filtered[current];
+    openPrintWindow(p.name + ' — Profile', buildProfileBlockHTML(p));
+  }
+
+  function exportAllProfiles(){
+    // Exports every participant in the full roster (not just the current
+    // search/filter view), one per printed page, so nothing is left out.
+    const html = participants.map(buildProfileBlockHTML).join('');
+    openPrintWindow('Participant Roster — All Profiles', html);
   }
 
   function updateFilterButtonState(){
