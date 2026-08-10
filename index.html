@@ -322,8 +322,8 @@
                 <button class="popover-close" data-close>&times;</button>
               </div>
               <div class="popover-body">
-                <label class="radio-row"><input type="radio" name="sortDir" value="none" checked> No sort (roster order)</label>
-                <label class="radio-row"><input type="radio" name="sortDir" value="asc"> A → Z</label>
+                <label class="radio-row"><input type="radio" name="sortDir" value="none"> No sort (roster order)</label>
+                <label class="radio-row"><input type="radio" name="sortDir" value="asc" checked> A → Z</label>
                 <label class="radio-row"><input type="radio" name="sortDir" value="desc"> Z → A</label>
               </div>
             </div>
@@ -485,7 +485,7 @@
   let filtered = [];
   let current = 0;
   let searchQuery = '';
-  let sortDir = 'none';        // 'none' | 'asc' | 'desc'
+  let sortDir = 'asc';         // 'none' | 'asc' | 'desc' — default: sort by Roster Name A→Z
   const activeRoles = new Set();
   const activeGroups = new Set();
 
