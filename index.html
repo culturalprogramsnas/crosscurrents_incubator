@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World</title>
+    <script>
+        function checkPassword() {
+            // Change "MySecretCode123" to whatever security code you want
+            var password = prompt("Please enter the security code to view this page:");
+            
+            if (password === "MySecretCode123") {
+                // If correct, show the hidden page content
+                document.getElementById("secure-content").style.display = "block";
+            } else {
+                // If wrong, deny access and reload the prompt
+                alert("Incorrect code. Access denied.");
+                window.location.reload(); 
+            }
+        }
+    </script>
+</head>
+<body onload="checkPassword()">
+
+    <!-- Everything inside this div stays hidden until the code is correct -->
+    <div id="secure-content" style="display:none;">
+        <h1>Hello World!</h1>
+        <p>You successfully unlocked this page with the security code.</p>
+    </div>
+
+</body>
+</html>
