@@ -77,46 +77,82 @@
   }
 
   /* ---------- App shell ---------- */
-  #app{ display:none; height:100vh; }
+  #app{ display:none; height:100vh; flex-direction:column; }
   #app.visible{ display:flex; }
 
-  /* Sidebar */
-  .sidebar{
-    width:250px; flex:0 0 250px;
-    background:var(--teal-800);
-    color:#eaf4f7;
-    display:flex; flex-direction:column;
-    padding:18px 12px;
-  }
-  .sidebar-title{
-    display:flex; align-items:center; gap:8px;
-    font-family:'Rubik',sans-serif; font-weight:700; font-size:15.5px;
-    padding:6px 10px 18px; color:#fff;
-  }
-  .sidebar-title .chev{ margin-left:auto; opacity:.7; font-size:11px; }
-  .nav-item{
-    display:flex; align-items:center; gap:10px;
-    padding:9px 10px; border-radius:8px;
-    font-size:13.5px; color:#dcedf1;
-    cursor:default; user-select:none;
-  }
-  .nav-item .ic{ width:16px; text-align:center; opacity:.85; font-size:13px; }
-  .nav-item.active{ background:rgba(255,255,255,.14); color:#fff; font-weight:600; }
-  .nav-sub{ padding-left:26px; }
-  .nav-divider{ height:1px; background:rgba(255,255,255,.12); margin:10px 6px; }
-  .sidebar-collapse{
-    margin-top:auto; padding:8px 10px; font-size:16px; opacity:.6;
-  }
+  .top-accent{ height:4px; flex:0 0 4px; background:linear-gradient(90deg,#2f6fa8,#1a86a0); }
 
   /* Main */
-  .main{ flex:1; display:flex; flex-direction:column; overflow:auto; }
+  .main{ flex:1; display:flex; flex-direction:column; overflow:auto; width:100%; }
   .topbar{
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 26px; background:#fff; border-bottom:1px solid var(--line);
   }
   .breadcrumb{ font-size:13.5px; color:var(--muted); }
   .breadcrumb b{ color:var(--ink); font-weight:600; }
-  .topbar-icons{ display:flex; gap:18px; color:var(--muted); font-size:13px; }
+  .topbar-icons{ display:flex; gap:8px; align-items:center; color:var(--muted); font-size:13px; }
+
+  .icon-btn{
+    display:flex; align-items:center; gap:6px;
+    background:none; border:1px solid transparent; border-radius:7px;
+    padding:6px 10px; font-size:13.5px; color:var(--muted); cursor:pointer;
+    font-family:inherit; transition:background .15s, color .15s, border-color .15s;
+  }
+  .icon-btn:hover{ background:#f2f6f7; color:var(--ink); }
+  .icon-btn.active{ background:var(--pill-blue-bg); color:var(--pill-blue-text); border-color:#d7e6f3; }
+  .icon-btn .count{
+    background:var(--teal-700); color:#fff; font-size:10.5px; font-weight:700;
+    border-radius:9px; padding:1px 6px; line-height:1.4;
+  }
+
+  .popover-wrap{ position:relative; }
+  .popover{
+    display:none;
+    position:absolute; top:calc(100% + 8px); right:0; z-index:20;
+    width:280px; background:#fff; border:1px solid var(--line); border-radius:12px;
+    box-shadow:0 4px 12px rgba(15,40,48,.1), 0 12px 32px rgba(15,40,48,.12);
+    overflow:hidden;
+  }
+  .popover.open{ display:block; }
+  .popover-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 14px; border-bottom:1px solid var(--line);
+    font-size:13px; font-weight:700; color:var(--ink);
+  }
+  .popover-close{
+    background:none; border:none; font-size:16px; line-height:1; color:var(--muted);
+    cursor:pointer; padding:2px 4px;
+  }
+  .popover-close:hover{ color:var(--ink); }
+  .popover-body{ padding:12px 14px; max-height:320px; overflow:auto; }
+  .popover-group + .popover-group{ margin-top:14px; }
+  .popover-group-title{
+    font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:8px;
+  }
+  .check-list{ display:flex; flex-direction:column; gap:2px; }
+  .check-row{
+    display:flex; align-items:center; gap:9px; font-size:13px; color:var(--ink);
+    padding:5px 6px; border-radius:6px; cursor:pointer;
+  }
+  .check-row:hover{ background:#f4f7f8; }
+  .check-row input{ accent-color:var(--teal-700); width:14px; height:14px; flex:0 0 14px; }
+  .check-count{ color:var(--muted); font-size:11.5px; margin-left:auto; }
+  .radio-row{
+    display:flex; align-items:center; gap:9px; font-size:13.5px; color:var(--ink);
+    padding:7px 6px; border-radius:6px; cursor:pointer;
+  }
+  .radio-row:hover{ background:#f4f7f8; }
+  .radio-row input{ accent-color:var(--teal-700); width:14px; height:14px; }
+  .popover-footer{
+    padding:10px 14px; border-top:1px solid var(--line);
+  }
+  .popover-clear{
+    background:none; border:none; color:var(--accent); font-size:12.5px; font-weight:600;
+    cursor:pointer; padding:0; font-family:inherit;
+  }
+  .popover-clear:hover{ text-decoration:underline; }
+  .empty-note{ font-size:12.5px; color:var(--muted); padding:4px 6px; }
 
   .content{ padding:26px 32px 40px; max-width:900px; width:100%; margin:0 auto; }
   .content-header{
@@ -218,10 +254,10 @@
   .status-msg{ text-align:center; padding:60px 20px; color:var(--muted); font-size:14px; }
 
   @media (max-width:720px){
-    .sidebar{ display:none; }
     .content{ padding:18px; }
     .card-top{ flex-direction:column; }
     .photo-wrap{ width:120px; height:120px; }
+    .popover{ width:min(280px,88vw); right:-10px; }
   }
 </style>
 </head>
@@ -240,25 +276,52 @@
 
   <!-- ===================== APP ===================== -->
   <div id="app">
-    <aside class="sidebar">
-      <div class="sidebar-title">📅&nbsp; Crosscurrents Database <span class="chev">▾</span></div>
-      <div class="nav-item"><span class="ic">🌐</span> Participants</div>
-      <div class="nav-item"><span class="ic">🌐</span> Working Groups</div>
-      <div class="nav-item"><span class="ic">🌐</span> Organizations</div>
-      <div class="nav-item"><span class="ic">⛑</span> Emergency Contacts</div>
-      <div class="nav-item"><span class="ic">📅</span> Home State of Participants</div>
-      <div class="nav-item"><span class="ic">👥</span> August Prep Meeting Cho…</div>
-      <div class="nav-divider"></div>
-      <div class="nav-item"><span class="ic">📁</span> Roster</div>
-      <div class="nav-item active nav-sub"> Participant Roster</div>
-      <div class="sidebar-collapse">≪</div>
-    </aside>
-
+    <div class="top-accent"></div>
     <div class="main">
       <div class="topbar">
         <div class="breadcrumb">Roster &nbsp;›&nbsp; <b>Participant Roster</b></div>
         <div class="topbar-icons">
-          <span>Filter</span><span>Sort</span><span>🔍</span><span>⋯</span>
+
+          <div class="popover-wrap">
+            <button class="icon-btn" id="filterBtn">Filter <span class="count" id="filterCount" style="display:none;"></span></button>
+            <div class="popover" id="filterPopover">
+              <div class="popover-header">
+                <span>Filter</span>
+                <button class="popover-close" data-close>&times;</button>
+              </div>
+              <div class="popover-body">
+                <div class="popover-group">
+                  <div class="popover-group-title">Role</div>
+                  <div class="check-list" id="roleChecks"></div>
+                </div>
+                <div class="popover-group">
+                  <div class="popover-group-title">Assigned Challenge / Working Group</div>
+                  <div class="check-list" id="groupChecks"></div>
+                </div>
+              </div>
+              <div class="popover-footer">
+                <button class="popover-clear" id="filterClearBtn">Clear filters</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="popover-wrap">
+            <button class="icon-btn" id="sortBtn">Sort</button>
+            <div class="popover" id="sortPopover">
+              <div class="popover-header">
+                <span>Sort by Roster Name</span>
+                <button class="popover-close" data-close>&times;</button>
+              </div>
+              <div class="popover-body">
+                <label class="radio-row"><input type="radio" name="sortDir" value="none" checked> No sort (roster order)</label>
+                <label class="radio-row"><input type="radio" name="sortDir" value="asc"> A → Z</label>
+                <label class="radio-row"><input type="radio" name="sortDir" value="desc"> Z → A</label>
+              </div>
+            </div>
+          </div>
+
+          <span class="icon-btn" id="searchIconBtn" title="Search">🔍</span>
+          <span class="icon-btn" style="cursor:default;">⋯</span>
         </div>
       </div>
 
@@ -393,6 +456,10 @@
   let participants = [];
   let filtered = [];
   let current = 0;
+  let searchQuery = '';
+  let sortDir = 'none';        // 'none' | 'asc' | 'desc'
+  const activeRoles = new Set();
+  const activeGroups = new Set();
 
   async function init(){
     try{
@@ -411,19 +478,27 @@
         group: p['Assigned Challenge / Working Group'] || '',
         role: p['Role'] || ''
       }));
-      filtered = participants;
       current = 0;
-      render();
+      buildFilterOptions();
+      applyFiltersSort();
 
       document.getElementById('searchInput').addEventListener('input', onSearch);
       document.getElementById('prevBtn').addEventListener('click', () => go(current - 1));
       document.getElementById('nextBtn').addEventListener('click', () => go(current + 1));
       document.addEventListener('keydown', e => {
-        if(app.classList.contains('visible')){
+        if(app.classList.contains('visible') && !isPopoverOpen()){
           if(e.key === 'ArrowLeft') go(current - 1);
           if(e.key === 'ArrowRight') go(current + 1);
         }
       });
+
+      document.getElementById('searchIconBtn').addEventListener('click', () => {
+        document.getElementById('searchInput').focus();
+      });
+
+      initPopovers();
+      updateFilterButtonState();
+      updateSortButtonState();
     } catch(err){
       document.getElementById('cardHost').innerHTML =
         `<div class="status-msg">Couldn't load <b>${CSV_PATH}</b>.<br>
@@ -433,13 +508,150 @@
     }
   }
 
-  function onSearch(e){
-    const q = e.target.value.trim().toLowerCase();
-    filtered = !q ? participants : participants.filter(p =>
-      [p.name, p.org, p.group, p.role, p.title].join(' ').toLowerCase().includes(q)
-    );
-    current = 0;
+  /* ---------------- Filter / Sort popovers ---------------- */
+  function uniqueSorted(values){
+    return [...new Set(values.map(v => (v || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+  }
+
+  function buildFilterOptions(){
+    const roles = uniqueSorted(participants.map(p => p.role));
+    const groups = uniqueSorted(participants.map(p => p.group));
+
+    const roleHost = document.getElementById('roleChecks');
+    roleHost.innerHTML = roles.length ? roles.map(r => {
+      const count = participants.filter(p => p.role === r).length;
+      return `<label class="check-row">
+        <input type="checkbox" value="${escapeHtml(r)}" data-kind="role">
+        ${escapeHtml(r)}<span class="check-count">${count}</span>
+      </label>`;
+    }).join('') : '<div class="empty-note">No role values found.</div>';
+
+    const groupHost = document.getElementById('groupChecks');
+    groupHost.innerHTML = groups.length ? groups.map(g => {
+      const count = participants.filter(p => p.group === g).length;
+      return `<label class="check-row">
+        <input type="checkbox" value="${escapeHtml(g)}" data-kind="group">
+        ${escapeHtml(g)}<span class="check-count">${count}</span>
+      </label>`;
+    }).join('') : '<div class="empty-note">No working group values found.</div>';
+
+    roleHost.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.checked ? activeRoles.add(cb.value) : activeRoles.delete(cb.value);
+        current = 0;
+        applyFiltersSort();
+        updateFilterButtonState();
+      });
+    });
+    groupHost.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        cb.checked ? activeGroups.add(cb.value) : activeGroups.delete(cb.value);
+        current = 0;
+        applyFiltersSort();
+        updateFilterButtonState();
+      });
+    });
+  }
+
+  function initPopovers(){
+    const filterBtn = document.getElementById('filterBtn');
+    const filterPop = document.getElementById('filterPopover');
+    const sortBtn = document.getElementById('sortBtn');
+    const sortPop = document.getElementById('sortPopover');
+
+    function closeAll(){
+      filterPop.classList.remove('open');
+      sortPop.classList.remove('open');
+    }
+    function toggle(pop){
+      const willOpen = !pop.classList.contains('open');
+      closeAll();
+      if(willOpen) pop.classList.add('open');
+    }
+
+    filterBtn.addEventListener('click', e => { e.stopPropagation(); toggle(filterPop); });
+    sortBtn.addEventListener('click', e => { e.stopPropagation(); toggle(sortPop); });
+
+    document.querySelectorAll('.popover-close').forEach(btn => {
+      btn.addEventListener('click', closeAll);
+    });
+
+    document.addEventListener('click', e => {
+      if(!e.target.closest('.popover-wrap')) closeAll();
+    });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeAll(); });
+
+    document.getElementById('filterClearBtn').addEventListener('click', () => {
+      activeRoles.clear();
+      activeGroups.clear();
+      document.querySelectorAll('#roleChecks input, #groupChecks input').forEach(cb => cb.checked = false);
+      current = 0;
+      applyFiltersSort();
+      updateFilterButtonState();
+    });
+
+    document.querySelectorAll('input[name="sortDir"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        sortDir = radio.value;
+        applyFiltersSort();
+        updateSortButtonState();
+      });
+    });
+  }
+
+  function isPopoverOpen(){
+    return !!document.querySelector('.popover.open');
+  }
+
+  function updateFilterButtonState(){
+    const btn = document.getElementById('filterBtn');
+    const badge = document.getElementById('filterCount');
+    const total = activeRoles.size + activeGroups.size;
+    btn.classList.toggle('active', total > 0);
+    if(total > 0){ badge.style.display = 'inline'; badge.textContent = total; }
+    else { badge.style.display = 'none'; }
+  }
+
+  function updateSortButtonState(){
+    const btn = document.getElementById('sortBtn');
+    btn.classList.toggle('active', sortDir !== 'none');
+    btn.innerHTML = sortDir === 'asc' ? 'Sort <span>A→Z</span>'
+      : sortDir === 'desc' ? 'Sort <span>Z→A</span>'
+      : 'Sort';
+  }
+
+  /* ---------------- Combined search + filter + sort ---------------- */
+  function applyFiltersSort(){
+    let list = participants;
+
+    if(searchQuery){
+      list = list.filter(p =>
+        [p.name, p.org, p.group, p.role, p.title].join(' ').toLowerCase().includes(searchQuery)
+      );
+    }
+    if(activeRoles.size > 0){
+      list = list.filter(p => activeRoles.has(p.role));
+    }
+    if(activeGroups.size > 0){
+      list = list.filter(p => activeGroups.has(p.group));
+    }
+
+    list = list.slice();
+    if(sortDir === 'asc'){
+      list.sort((a,b) => a.name.localeCompare(b.name));
+    } else if(sortDir === 'desc'){
+      list.sort((a,b) => b.name.localeCompare(a.name));
+    }
+
+    filtered = list;
+    if(current >= filtered.length) current = 0;
     render();
+  }
+
+  function onSearch(e){
+    searchQuery = e.target.value.trim().toLowerCase();
+    current = 0;
+    applyFiltersSort();
   }
 
   function go(i){
