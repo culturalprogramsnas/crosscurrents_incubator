@@ -759,8 +759,10 @@
 
   function exportAllProfiles(){
     // Exports every participant in the full roster (not just the current
-    // search/filter view), one per printed page, so nothing is left out.
-    const html = participants.map(buildProfileBlockHTML).join('');
+    // search/filter view), sorted A→Z by Roster Name, one per printed page,
+    // so nothing is left out and the PDF is always in a predictable order.
+    const sorted = participants.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const html = sorted.map(buildProfileBlockHTML).join('');
     openPrintWindow('Participant Roster — All Profiles', html);
   }
 
