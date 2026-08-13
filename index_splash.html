@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crosscurrents Incubator Roster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-900:#0f4a58;
+    --teal-800:#125c6d;
+    --teal-700:#166f84;
+    --teal-active:#0d5566;
+    --ink:#1d2b32;
+    --muted:#6b7c84;
+    --line:#e3e9ec;
+    --bg:#f4f7f8;
+    --card:#ffffff;
+    --radius-lg:14px;
+    --shadow:0 1px 3px rgba(15,40,48,.08), 0 8px 24px rgba(15,40,48,.06);
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+  .top-accent{ height:4px; flex:0 0 4px; background:linear-gradient(90deg,#2f6fa8,#1a86a0); }
+
+  .wrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+  }
+
+  .card{
+    width:100%;
+    max-width:640px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    padding:40px 44px 44px;
+  }
+
+  .photo-block{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .photo-block img{
+    width:100%;
+    max-width:320px;
+    height:auto;
+    border-radius:10px;
+    display:inline-block;
+    box-shadow:0 4px 14px rgba(15,40,48,.12);
+  }
+  .photo-credit{
+    margin-top:10px;
+    font-size:11.5px;
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  h1{
+    font-family:'Rubik',sans-serif;
+    font-size:26px;
+    font-weight:700;
+    color:var(--teal-900);
+    text-align:center;
+    margin:0 0 22px;
+    line-height:1.3;
+  }
+
+  .body-text{
+    text-align:left;
+    font-size:14.5px;
+    line-height:1.7;
+    color:#33454c;
+  }
+  .body-text p{ margin:0 0 16px; }
+  .body-text p:last-of-type{ margin-bottom:28px; }
+
+  .cta-row{ text-align:center; }
+  .cta-button{
+    display:inline-block;
+    background:var(--teal-700);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    text-decoration:none;
+    padding:13px 32px;
+    border-radius:9px;
+    transition:background .15s ease;
+  }
+  .cta-button:hover{ background:var(--teal-active); }
+
+  @media (max-width:520px){
+    .card{ padding:30px 24px 34px; }
+    h1{ font-size:22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="top-accent"></div>
+  <div class="wrap">
+    <div class="card">
+      <div class="photo-block">
+        <img src="Atelier_Jamey_Grimes.jpg" alt="Atelier, photograph by Jamey Grimes">
+        <div class="photo-credit">Image: Jamey Grimes, Atelier, 2025</div>
+      </div>
+
+      <h1>Crosscurrents Incubator Roster</h1>
+
+      <div class="body-text">
+        <p>The Crosscurrents Incubator will take place November 10 - 13, 2026, at Atelier de la Nature, Arnaudville, Louisiana, near Lafayette. This site features a roster of the 30 participants and their initial assigned challenge / working group, as well the hosts, staff, advisors, and special guests who will be at the convening. It can be sorted by name, filtered by working group or role, and searched by name, working group, institution, or role.</p>
+        <p>Information provided here is solely for facilitating collaboration between the Crosscurrents Incubator attendees. Please do not share it outside of our community.</p>
+      </div>
+
+      <div class="cta-row">
+        <a class="cta-button" href="index.html">Access the Roster</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
