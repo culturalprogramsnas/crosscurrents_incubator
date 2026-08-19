@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Discourage browsers/proxies from caching the page shell itself. GitHub
+     Pages does not support setting real Cache-Control response headers, so
+     these meta tags are a best-effort request only — they are not honored
+     by every browser or by the GitHub Pages/Fastly CDN edge cache. The CSV
+     data itself is protected from stale-caching separately, via the
+     cache-busting query string on the fetch() call further down this file. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Crosscurrents Database — Participant Roster</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
@@ -491,7 +500,16 @@
 
   async function init(){
     try{
-      const res = await fetch(CSV_PATH, { cache: 'no-store' });
+      // Cache-busting: GitHub Pages is served through a CDN (Fastly) that
+      // caches files at the edge, separately from the browser cache. A plain
+      // fetch() with {cache:'no-store'} only bypasses the *browser's* cache —
+      // it does nothing about a stale copy sitting on the CDN, which is why
+      // clearing browser cache alone doesn't pick up new CSV data. Appending
+      // a unique, always-changing query string forces every request to be
+      // treated as a brand-new URL, so both the browser and the CDN edge
+      // cache always fetch a fresh copy instead of serving a cached one.
+      const cacheBustedUrl = CSV_PATH + '?v=' + Date.now();
+      const res = await fetch(cacheBustedUrl, { cache: 'no-store' });
       if(!res.ok) throw new Error('HTTP ' + res.status);
       let text = await res.text();
       text = text.replace(/^\uFEFF/, ''); // strip UTF-8 BOM some exports (e.g. Airtable) include
